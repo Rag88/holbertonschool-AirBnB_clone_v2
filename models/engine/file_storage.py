@@ -10,7 +10,7 @@ class FileStorage:
 
     def all(self, cls=None):
         """Returns the list of objects of one type of class.
-        it’s an optional filtering"""
+        it's an optional filtering"""
         if cls is not None:
             class_dict = {}
             for key, value in FileStorage.__objects.items():
