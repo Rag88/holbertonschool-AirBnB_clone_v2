@@ -2,7 +2,7 @@
 """ Console Module """
 import cmd
 import sys
-# For lexical analyzers import the module shlex
+# For lexical analyzers
 import shlex
 from models.base_model import BaseModel
 from models.__init__ import storage
