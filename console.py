@@ -2,8 +2,7 @@
 """ Console Module """
 import cmd
 import sys
-# For lexical analyzers
-import shlex
+import os
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -12,13 +11,13 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+"""import utilities"""
 
 
 class HBNBCommand(cmd.Cmd):
     """ Contains the functionality for the HBNB console"""
 
     # determines prompt for interactive/non-interactive modes
-    # The isatty() method returns True if the file stream is interactive
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
 
     classes = {
@@ -36,7 +35,7 @@ class HBNBCommand(cmd.Cmd):
     def preloop(self):
         """Prints if isatty is false"""
         if not sys.__stdin__.isatty():
-            print('(hbnb)')
+            print('(hbtn)')
 
     def precmd(self, line):
         """Reformat command line for advanced command syntax.
@@ -88,12 +87,6 @@ class HBNBCommand(cmd.Cmd):
         finally:
             return line
 
-    def postcmd(self, stop, line):
-        """Prints if isatty is false"""
-        if not sys.__stdin__.isatty():
-            print('(hbnb) ', end='')
-        return stop
-
     def do_quit(self, command):
         """ Method to exit the HBNB console"""
         exit()
@@ -118,22 +111,37 @@ class HBNBCommand(cmd.Cmd):
     def do_create(self, args):
         """ Create an object of any class"""
         tok = shlex.split(args)
-        if not tok[0]:
+        if not tok:
             print("** class name missing **")
             return
+        """class_name = args.split()[0]"""
         elif tok[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
+        """parse_dict = utilities.create_dictionary(args)"""
         new_instance = HBNBCommand.classes[tok[0]]()
         del tok[0]
         for argument in tok:
-            data = argument.split('=')
-            key = data[0]
-            value = data[1]
-            new_instance.__dict__[key] = value
-        storage.save()
+            try:
+                key_value = argument.split('=')
+                key = key_value[0]
+                value = key_value[1]
+                value = value.replace('_', ' ')
+                if '.' in value:
+                    try:
+                        value = float(value)
+                    except Exception:
+                        pass
+                else:
+                    try:
+                        value = int(value)
+                    except Exception:
+                        pass
+                new_instance.__dict__[key] = value
+            except Exception:
+                pass
+        new_instance.save()
         print(new_instance.id)
-        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -215,11 +223,10 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
+            for k, v in storage.all(HBNBCommand.classes[args]).items():
+                print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 print_list.append(str(v))
 
         print(print_list)
