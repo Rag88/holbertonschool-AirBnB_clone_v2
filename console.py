@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """ Console Module """
 import cmd
+import shlex
 import sys
-import os
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -11,7 +11,6 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-"""import utilities"""
 
 
 class HBNBCommand(cmd.Cmd):
@@ -35,7 +34,7 @@ class HBNBCommand(cmd.Cmd):
     def preloop(self):
         """Prints if isatty is false"""
         if not sys.__stdin__.isatty():
-            print('(hbtn)')
+            print('(hbnb)')
 
     def precmd(self, line):
         """Reformat command line for advanced command syntax.
@@ -87,6 +86,12 @@ class HBNBCommand(cmd.Cmd):
         finally:
             return line
 
+    def postcmd(self, stop, line):
+        """Prints if isatty is false"""
+        if not sys.__stdin__.isatty():
+            print('(hbnb) ', end='')
+        return stop
+
     def do_quit(self, command):
         """ Method to exit the HBNB console"""
         exit()
@@ -111,14 +116,12 @@ class HBNBCommand(cmd.Cmd):
     def do_create(self, args):
         """ Create an object of any class"""
         tok = shlex.split(args)
-        if not tok:
+        if not tok[0]:
             print("** class name missing **")
             return
-        """class_name = args.split()[0]"""
         elif tok[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        """parse_dict = utilities.create_dictionary(args)"""
         new_instance = HBNBCommand.classes[tok[0]]()
         del tok[0]
         for argument in tok:
