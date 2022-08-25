@@ -4,7 +4,7 @@
 apt-get update
 apt-get install -y nginx
 mkdir -p /data/web_static/releases/test /data/web_static/shared/
-echo " Holberton School - Depoly Static " > /data/web_static/releases/test/index.html
+echo " Holberton School - Deploy Static " > /data/web_static/releases/test/index.html
 ln -sf /data/web_static/releases/test/ /data/web_static/current
 chown -hR ubuntu:ubuntu /data/
 sed -i "/listen 80 default_server/a \\\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t}\n" /etc/nginx/sites-available/default
